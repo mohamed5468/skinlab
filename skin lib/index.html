@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<!-- Meta Pixel Code -->
+<script>
+    !function (f, b, e, v, n, t, s) {
+        if (f.fbq) return; n = f.fbq = function () {
+            n.callMethod ?
+            n.callMethod.apply(n, arguments) : n.queue.push(arguments)
+        };
+        if (!f._fbq) f._fbq = n; n.push = n; n.loaded = !0; n.version = '2.0';
+        n.queue = []; t = b.createElement(e); t.async = !0;
+        t.src = v; s = b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t, s)
+    }(window, document, 'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', '1225383949666273');
+    fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+        src="https://www.facebook.com/tr?id=1225383949666273&ev=PageView&noscript=1" /></noscript>
+<!-- End Meta Pixel Code -->
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Skin Lab | عناية طبيعية فاخرة بالبشرة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="style/style.css">
+</head>
+
+<body class="bg-[#f8f4ed] overflow-x-hidden">
+    <!-- Ambient Glowing Elements for Premium Feel -->
+    <div class="fixed -top-40 -right-40 w-96 h-96 bg-[#d4af37]/10 rounded-full blur-[100px] pointer-events-none z-0"></div>
+    <div class="fixed top-1/2 -left-40 w-96 h-96 bg-[#f8e8e0]/40 rounded-full blur-[120px] pointer-events-none z-0"></div>
+
+    <!-- Navbar -->
+    <nav class="bg-white border-b sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+            <!-- New Logo -->
+            <div class="flex items-center gap-3">
+                <img src="images/2222.png" alt="The Skin Lab " class="nav-logo">
+            </div>
+
+            <!-- Menu -->
+            <div class="hidden md:flex items-center gap-8 text-lg font-medium text-gray-700">
+                <a href="#products" class="hover:text-[#d4af37] transition-colors">المنتجات</a>
+                <a href="#about" class="hover:text-[#d4af37] transition-colors">عن The Skin Lab</a>
+                <a href="#contact" class="hover:text-[#d4af37] transition-colors">تواصل معنا</a>
+            </div>
+
+            <!-- Cart + Mobile -->
+            <div class="flex items-center gap-4">
+                <button onclick="showCart()"
+                    class="flex items-center gap-1.5 bg-[#f5f0e8] hover:bg-[#ede4d8] text-[#5c4634] px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-3xl font-semibold transition-all active:scale-95">
+                    <i class="fas fa-shopping-cart text-lg sm:text-xl"></i>
+                    <span id="cart-count"
+                        class="bg-[#d4af37] text-white text-xs font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
+                    <span class="hidden sm:inline">السلة</span>
+                </button>
+
+                <button onclick="toggleMobileMenu()" class="md:hidden text-2xl text-[#5c4634] p-1">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t px-6 py-4">
+            <a href="#products" onclick="toggleMobileMenu()" class="block py-3 text-lg">المنتجات</a>
+            <a href="#about" onclick="toggleMobileMenu()" class="block py-3 text-lg">عن The Skin Lab</a>
+            <a href="#contact" onclick="toggleMobileMenu()" class="block py-3 text-lg">تواصل معنا</a>
+        </div>
+    </nav>
+
+    <!-- Promo Countdown Banner -->
+    <div id="offerBanner" class="hidden bg-gradient-to-r from-[#3c2f1f] via-[#5c4634] to-[#2a2119] text-white py-3 px-4 shadow-xl flex items-center justify-center flex-wrap gap-4 text-center z-40 border-b border-[#d4af37]/20 relative overflow-hidden">
+        <!-- Shine Overlay Effect -->
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -skew-x-12 translate-x-[-100%] animate-[shine_8s_infinite] pointer-events-none"></div>
+        
+        <div class="flex items-center gap-2.5 font-bold text-sm sm:text-base relative z-10">
+            <span class="text-xl inline-block animate-bounce">✨</span>
+            <span id="offerTitle" class="tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-white via-[#f5f0e8] to-[#d4af37]">خصم خاص لفترة محدودة</span>
+        </div>
+        
+        <div class="flex items-center gap-2 font-bold text-xs sm:text-sm relative z-10" dir="ltr">
+            <div class="flex flex-col items-center">
+                <span id="timerDays" class="bg-gradient-to-b from-[#f5f0e8] to-[#ede4d8] text-[#3c2f1f] px-2.5 py-1 rounded-xl font-mono text-sm sm:text-base shadow-inner border border-[#d4af37]/20 min-w-[36px]">00</span>
+                <span class="text-[9px] text-[#d4af37] mt-1 font-semibold">DAYS</span>
+            </div>
+            <span class="text-[#d4af37] font-mono text-lg -mt-4">:</span>
+            <div class="flex flex-col items-center">
+                <span id="timerHours" class="bg-gradient-to-b from-[#f5f0e8] to-[#ede4d8] text-[#3c2f1f] px-2.5 py-1 rounded-xl font-mono text-sm sm:text-base shadow-inner border border-[#d4af37]/20 min-w-[36px]">00</span>
+                <span class="text-[9px] text-[#d4af37] mt-1 font-semibold">HOURS</span>
+            </div>
+            <span class="text-[#d4af37] font-mono text-lg -mt-4">:</span>
+            <div class="flex flex-col items-center">
+                <span id="timerMinutes" class="bg-gradient-to-b from-[#f5f0e8] to-[#ede4d8] text-[#3c2f1f] px-2.5 py-1 rounded-xl font-mono text-sm sm:text-base shadow-inner border border-[#d4af37]/20 min-w-[36px]">00</span>
+                <span class="text-[9px] text-[#d4af37] mt-1 font-semibold">MINS</span>
+            </div>
+            <span class="text-red-500 font-mono text-lg -mt-4">:</span>
+            <div class="flex flex-col items-center">
+                <span id="timerSeconds" class="bg-gradient-to-b from-red-50 to-red-100 text-red-600 px-2.5 py-1 rounded-xl font-mono text-sm sm:text-base shadow-inner border border-red-200 min-w-[36px]">00</span>
+                <span class="text-[9px] text-red-400 mt-1 font-semibold">SECS</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero-bg text-[#3c2f1f] min-h-screen flex items-center relative">
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+            <div class="space-y-8">
+                <div
+                    class="inline-flex items-center gap-2 bg-white/70 backdrop-blur-md px-6 py-2 rounded-3xl text-sm font-medium">
+                    <span class="relative flex h-3 w-3">
+                        <span
+                            class="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#d4af37] opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-3 w-3 bg-[#d4af37]"></span>
+                    </span>
+                    BY Dr Nada SAMEER • 2026
+                </div>
+
+                <h1 class="text-6xl md:text-7xl font-bold leading-none tracking-tighter">
+                    <br>Simple care... Real glow
+                </h1>
+
+                <p class="text-2xl max-w-md text-[#5c4634]">
+                    منتجات عناية بالبشرة طبيعية 100% • مصنوعة بحب ودقة علمية
+                </p>
+
+                <div class="flex items-center gap-4">
+                    <a href="#products"
+                        class="btn-gold-premium text-white px-10 py-5 rounded-3xl font-bold text-xl inline-flex items-center gap-3 shadow-xl transition-all active:scale-95">
+                        تسوق الآن
+                        <i class="fas fa-arrow-left"></i>
+                    </a>
+
+                    <a href="#about"
+                        class="border-2 border-[#d4af37] bg-white/40 hover:bg-white/80 backdrop-blur-md px-8 py-5 rounded-3xl font-semibold text-xl inline-flex items-center gap-2 transition-all hover:-translate-y-0.5 active:scale-95 text-[#5c4634]">
+                        تعرفي علينا
+                    </a>
+                </div>
+
+                <div class="flex items-center gap-8 text-sm">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-leaf text-3xl text-[#d4af37]"></i>
+                        <div>
+                            <div class="font-bold">100% طبيعي</div>
+                            <div class="text-[#5c4634]/70">خالي من المواد الكيميائية</div>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-truck text-3xl text-[#d4af37]"></i>
+                        <div>
+                            <div class="font-bold">توصيل سريع</div>
+                            <div class="text-[#5c4634]/70">داخل بني سويف</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hero Visual -->
+            <!-- Hero Visual - فيديو بدل الصورة -->
+            <!-- Hero Visual - فيديو (شغال على الموبايل واللاب توب) -->
+            <div class="flex justify-center relative">
+                <div
+                    class="absolute -inset-10 bg-gradient-to-br from-[#d4af37]/20 to-white/30 rounded-[4rem] -rotate-6">
+                </div>
+
+                <video autoplay muted loop playsinline
+                    class="rounded-3xl shadow-2xl w-full max-w-md md:max-w-lg object-cover relative z-10 border-8 border-white">
+                    <source src="images/99999.mp4" type="video/mp4">
+                    <source src="images/99999.mp4" type="video/webm">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+        </div>
+
+        <div class="absolute bottom-10 left-1/2 flex flex-col items-center text-[#5c4634]/60 text-sm">
+            <div class="animate-bounce">↓</div>
+            اسحبي للأسفل
+        </div>
+    </section>
+
+    <!-- Products Section -->
+    <section id="products" class="max-w-7xl mx-auto px-6 py-20 bg-white rounded-3xl shadow-sm border border-gray-50">
+        <div class="text-center mb-12">
+            <span class="px-6 py-2 bg-[#f5f0e8] text-[#d4af37] rounded-3xl text-sm font-bold">✦ مجموعة NADA SAMEER
+                ✦</span>
+            <h2 class="text-5xl font-bold mt-4 text-[#3c2f1f]">منتجات طبيعية لجمال دائم</h2>
+            <p class="text-lg text-gray-500 mt-3 max-w-2xl mx-auto">عناية طبيعية فاخرة مصممة بدقة علمية لتناسب احتياجات
+                بشرتك</p>
+
+            <!-- Search bar -->
+            <div class="mt-8 max-w-xl mx-auto relative">
+                <input id="menuSearchInput" type="text" oninput="window.searchMenu(this.value)"
+                    placeholder="ابحثي عن منتجك المفضل..."
+                    class="w-full rounded-3xl border border-gray-200 bg-gray-50 px-5 py-4 pr-12 text-lg outline-none focus:border-[#d4af37] focus:bg-white transition-all text-right">
+                <i class="fas fa-search absolute right-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+            </div>
+
+            <!-- Search Results -->
+            <div id="menuSearchResults" class="mt-8 grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8"></div>
+        </div>
+
+        <!-- Categories Grid -->
+        <div id="categories-grid" class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center py-20 col-span-full text-gray-500">
+                <i class="fas fa-spinner fa-spin text-3xl text-[#d4af37]"></i>
+                <p class="mt-2 font-semibold">جاري تحميل الأقسام...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Brief -->
+    <section id="about" class="bg-[#3c2f1f] text-white py-16">
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-12 gap-12 items-center">
+            <div class="md:col-span-5">
+                <img src="images/2222.png" alt="The Skin Lab" class="rounded-3xl shadow-2xl w-full">
+            </div>
+            <div class="md:col-span-7">
+                <h2 class="text-4xl font-bold mb-6">The Skin Lab by Nada Sameer</h2>
+                <p class="text-xl leading-relaxed text-white/80">
+                    نجمع بين الطبيعة والعلم لنقدم لكِ منتجات عناية بالبشرة فاخرة وآمنة. كل منتج مصنوع بحب في مصر بمكونات
+                    طبيعية نقية.
+                </p>
+                <div class="grid grid-cols-3 gap-8 mt-12">
+                    <div>
+                        <div class="text-[#d4af37] text-5xl font-bold">100%</div>
+                        <div class="font-medium">طبيعي</div>
+                    </div>
+                    <div>
+                        <div class="text-[#d4af37] text-5xl font-bold">98%</div>
+                        <div class="font-medium">رضا العميلات</div>
+                    </div>
+                    <div>
+                        <div class="text-[#d4af37] text-5xl font-bold">24h</div>
+                        <div class="font-medium">توصيل</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-[#2a2119] text-white py-16">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid md:grid-cols-12 gap-12">
+
+                <div class="md:col-span-4">
+                    <img src="images/2222.png" alt="Logo" class="h-20 mb-6">
+                    <p class="text-white/70 text-lg leading-relaxed">
+                        جمالك الطبيعي يستحق الأفضل
+                    </p>
+
+                    <div class="mt-8 flex gap-6 text-3xl">
+                        <!-- WhatsApp -->
+                        <a href="https://wa.me/201204431632" target="_blank"
+                            class="hover:text-[#d4af37] transition-colors">
+                            <i class="fab fa-whatsapp"></i>
+                        </a>
+
+                        <!-- Instagram -->
+                        <a href="https://www.instagram.com/theskinlab2022?igsh=MWc5aG1xdjF3bDBxeA==" target="_blank"
+                            class="hover:text-[#d4af37] transition-colors">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+
+                        <!-- Facebook -->
+                        <a href="https://www.facebook.com/share/1BcRfEYBzq/" target="_blank"
+                            class="hover:text-[#d4af37] transition-colors">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+
+                        <!-- TikTok -->
+                        <a href="https://www.tiktok.com/@the.skin.lab8?_r=1&_t=ZS-98J6Rb0NcTE" target="_blank"
+                            class="hover:text-[#d4af37] transition-colors">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="md:col-span-2">
+                    <h4 class="font-semibold mb-6 text-[#d4af37]">روابط</h4>
+                    <a href="#products" class="block mb-3 hover:text-[#d4af37]">المنتجات</a>
+                    <a href="#" class="block mb-3 hover:text-[#d4af37]">سياسة الخصوصية</a>
+                </div>
+
+                <div class="md:col-span-3">
+                    <h4 class="font-semibold mb-6 text-[#d4af37]">اتصل بنا</h4>
+
+                    <div class="space-y-4 text-white/80">
+                        <div class="flex gap-3 items-center">
+                            <i class="fas fa-phone text-[#d4af37]"></i>
+                            <div>01204431632</div>
+                        </div>
+
+                        <div class="flex gap-3 items-center">
+                            <i class="fab fa-whatsapp text-[#d4af37]"></i>
+                            <div>واتساب: 01204431632</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="text-center text-white/40 text-sm mt-16">
+                © 2026 The Skin Lab by Nada Sameer • جميع الحقوق محفوظة |
+                <a href="https://www.facebook.com/YASmarketingagency" target="_blank"
+                    class="text-[#d4af37] hover:text-white transition-colors font-semibold">
+                    Yas Marketing Agency
+                </a>
+            </div>
+
+        </div>
+    </footer>
+
+    <!-- Product Modal -->
+    <div id="productModal" onclick="if(event.target === this) window.closeModal()"
+        class="hidden fixed inset-0 bg-black/70 z-[100] flex items-center justify-center p-0 sm:p-4">
+        <div onclick="event.stopImmediatePropagation()"
+            class="modal-pop bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
+            <div class="px-8 py-6 border-b flex items-center justify-between gap-4">
+                <div id="modalTitle" class="text-3xl font-bold text-[#d4af37]"></div>
+                <div class="flex items-center gap-3">
+                    <button onclick="window.closeModal()" class="text-3xl text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="modalContent" class="flex-1 p-3 sm:p-8 overflow-auto">
+                <div id="productsContainer" class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6"></div>
+            </div>
+            <div class="px-8 py-6 border-t text-center text-sm text-gray-500">
+                أضيفي المنتجات المفضلة للسلة، واختاري التوصيل أو الاستلام قبل إرسال الطلب.
+            </div>
+        </div>
+    </div>
+
+    <!-- Phone Number Modal -->
+    <div id="phoneModal"
+        class="hidden fixed inset-0 z-[150] items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div onclick="event.stopImmediatePropagation()"
+            class="modal-pop bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl transform transition-all">
+            <div class="text-center">
+                <div
+                    class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#f5f0e8] text-[#d4af37]">
+                    <i class="fab fa-whatsapp text-3xl"></i>
+                </div>
+                <h3 class="mt-4 text-2xl font-bold text-gray-900">أدخلي بيانات التواصل</h3>
+                <p class="mt-2 text-sm text-gray-500">
+                    يرجى كتابة الاسم ورقم الهاتف لتأكيد حجز طلبك ومتابعته عبر الواتساب.
+                </p>
+            </div>
+            <div class="mt-6 space-y-4">
+                <div>
+                    <label class="mb-2 block text-right text-sm font-semibold text-gray-700"> اسم العميلة <span
+                            class="text-red-500">*</span></label>
+                    <input id="customerNameInput" type="text" placeholder="الاسم الكامل"
+                        class="w-full rounded-2xl border border-gray-200 p-3.5 outline-none focus:border-[#d4af37] text-right" />
+                </div>
+                <div>
+                    <label class="mb-2 block text-right text-sm font-semibold text-gray-700">رقم الهاتف <span
+                            class="text-red-500">*</span></label>
+                    <input type="tel" id="customerPhoneInput" dir="ltr" placeholder="مثال: 01012345678"
+                        class="w-full rounded-2xl border border-gray-200 bg-gray-50 p-4 text-right text-lg outline-none focus:border-[#d4af37] focus:bg-white transition">
+                </div>
+                <p id="phoneErrorMsg" class="mt-2 text-right text-sm text-red-500 hidden">يرجى إدخال رقم هاتف صالح</p>
+            </div>
+            <div class="mt-8 flex gap-3">
+                <button onclick="closePhoneModal(true)"
+                    class="flex-1 rounded-2xl border border-gray-300 bg-white px-4 py-3.5 font-semibold text-gray-700 hover:bg-gray-50 transition active:scale-95">إلغاء</button>
+                <button onclick="confirmPhoneAndSend()"
+                    class="flex-1 rounded-2xl bg-[#d4af37] hover:bg-[#c19a2e] px-4 py-3.5 font-semibold text-white shadow-md transition active:scale-95 flex items-center justify-center gap-2">
+                    <i class="fab fa-whatsapp"></i> تأكيد وإرسال
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Modal Drawer -->
+    <div id="cartModal" onclick="if(event.target === this) window.closeCart()"
+        class="hidden fixed inset-0 bg-black/70 z-[120] items-stretch justify-end p-0 sm:p-4">
+        <aside onclick="event.stopImmediatePropagation()"
+            class="cart-drawer flex h-full w-full max-w-xl flex-col bg-gray-50 shadow-2xl sm:rounded-3xl overflow-hidden">
+
+            <!-- Header -->
+            <div class="flex items-center justify-between border-b bg-white px-5 py-4 sm:px-6">
+                <div>
+                    <p class="text-sm font-bold uppercase tracking-wide text-[#d4af37]">سلة المشتريات</p>
+                    <h2 class="text-2xl font-bold text-gray-950">طلباتك</h2>
+                </div>
+                <button onclick="window.closeCart()"
+                    class="flex h-11 w-11 items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-[#f5f0e8] hover:text-[#d4af37] transition">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 overflow-auto px-4 py-5 sm:px-6 space-y-6">
+                <!-- Empty Cart State -->
+                <div id="emptyCart"
+                    class="hidden rounded-3xl border border-dashed border-gray-300 bg-white p-8 text-center">
+                    <div
+                        class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#f5f0e8] text-[#d4af37]">
+                        <i class="fas fa-shopping-basket text-2xl"></i>
+                    </div>
+                    <h3 class="mt-4 text-xl font-bold text-gray-900">السلة فارغة</h3>
+                    <p class="mt-2 text-gray-500">أضيفي بعض المنتجات الرائعة لبدء التسوق.</p>
+                    <button
+                        onclick="window.closeCart(); document.getElementById('products').scrollIntoView({behavior: 'smooth'})"
+                        class="mt-6 rounded-2xl bg-[#d4af37] hover:bg-[#c19a2e] px-6 py-3 font-semibold text-white transition">تصفح
+                        المنتجات</button>
+                </div>
+
+                <!-- Cart Items List -->
+                <div id="cartItems" class="space-y-4"></div>
+
+                <!-- Checkout Options & Fields -->
+                <div id="cartCheckout" class="space-y-5">
+                    <div class="rounded-3xl bg-white p-5 shadow-sm border border-gray-100">
+                        <h3 class="mb-4 text-lg font-bold text-gray-900">خيارات الاستلام</h3>
+                        <div class="flex gap-2 rounded-2xl bg-gray-50 p-1">
+                            <button id="pickupBtn" onclick="window.setCheckoutType('pickup')"
+                                class="flex-1 rounded-xl px-4 py-3 font-semibold transition-all">استلام شخصي</button>
+                            <button id="deliveryBtn" onclick="window.setCheckoutType('delivery')"
+                                class="flex-1 rounded-xl px-4 py-3 font-semibold transition-all">توصيل للمنزل</button>
+                        </div>
+
+                        <!-- Pickup Notes -->
+                        <div id="pickupFields" class="mt-4 hidden">
+                            <label class="mb-2 block text-sm font-semibold text-gray-700">ملاحظات إضافية</label>
+                            <textarea id="customerNotes" rows="3"
+                                class="w-full resize-none rounded-2xl border border-gray-200 bg-gray-50 p-3 outline-none focus:border-[#d4af37] focus:bg-white text-sm"
+                                placeholder="أكتبي أي ملاحظات تودين إخبارنا بها..."></textarea>
+                        </div>
+
+                        <!-- Delivery Fields -->
+                        <div id="deliveryFields" class="mt-4">
+                            <label class="mb-2 block text-sm font-semibold text-gray-700">منطقة التوصيل</label>
+                            <div class="relative">
+                                <input type="text" id="deliveryAreaSearch"
+                                    oninput="window.filterDeliveryAreas(this.value)"
+                                    onfocus="window.showDeliveryAreasList()" placeholder="ابحثي عن منطقتك..."
+                                    class="w-full rounded-2xl border border-gray-200 bg-gray-50 p-3 outline-none focus:border-[#d4af37] text-sm">
+                                <div id="deliveryAreaList"
+                                    class="hidden absolute z-50 mt-2 max-h-60 w-full overflow-auto rounded-2xl border border-gray-200 bg-white shadow-lg">
+                                </div>
+                            </div>
+                            <input type="hidden" id="deliveryAreaSelect">
+
+                            <label class="mb-2 mt-4 block text-sm font-semibold text-gray-700">العنوان بالتفصيل</label>
+                            <textarea id="customerNotesDelivery" rows="3"
+                                class="w-full resize-none rounded-2xl border border-gray-200 bg-gray-50 p-3 outline-none focus:border-[#d4af37] text-sm"
+                                placeholder="الشارع، رقم العمارة، الشقة، أو أي علامة مميزة..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Cart Totals -->
+                    <div class="rounded-3xl bg-white p-5 shadow-sm border border-gray-100">
+                        <div class="flex items-center justify-between py-2 text-gray-600 text-base">
+                            <span>المجموع الفرعي</span>
+                            <strong id="cartSubtotal" class="text-gray-900">0 ج.م</strong>
+                        </div>
+                        <div class="flex items-center justify-between py-2 text-gray-600 text-base">
+                            <span>رسوم التوصيل</span>
+                            <strong id="cartDelivery" class="text-gray-900">0 ج.م</strong>
+                        </div>
+                        <div class="mt-2 flex items-center justify-between border-t pt-4 text-xl font-bold">
+                            <span>الإجمالي</span>
+                            <strong id="cartTotal" class="text-[#d4af37]">0 ج.م</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer/Submit Button -->
+            <div class="border-t bg-white px-5 py-4 sm:px-6">
+                <p id="cartError" class="mb-3 min-h-5 text-sm font-semibold text-red-600 text-center"></p>
+                <button onclick="window.requestPhoneBeforeOrder()"
+                    class="flex w-full items-center justify-center gap-3 rounded-2xl bg-green-500 hover:bg-green-600 px-6 py-4 text-lg font-bold text-white shadow-lg transition active:scale-95">
+                    <i class="fab fa-whatsapp text-2xl"></i> إرسال الطلب
+                </button>
+            </div>
+        </aside>
+    </div>
+
+    <script src="js/script.js"></script>
