@@ -8,8 +8,8 @@
     "durationHours": 48
   },
   "menu": {
-    "face_care": {
-      "title": "العناية بالوجه والمسام",
+    "Face care ": {
+      "title": "Face care",
       "image": "images/111.jpeg",
       "items": [
         {
@@ -42,8 +42,8 @@
         }
       ]
     },
-    "eye_lip_care": {
-      "title": "العناية بالعين والشفاه",
+    "Lip & Eye care ": {
+      "title": "Lip & Eye care",
       "image": "images/777.jpeg",
       "items": [
         {
@@ -69,8 +69,8 @@
         }
       ]
     },
-    "hand_nail_care": {
-      "title": "العناية باليدين والأظافر",
+    "Body care": {
+      "title": "Body care",
       "image": "images/666.jpeg",
       "items": [
         {
