@@ -28,9 +28,7 @@ function formatPrice(price) {
 }
 
 function getProductPrice(item) {
-    if (activeOffer) {
-        return Math.round(Number(item.price) * (1 - activeOffer.percentage / 100));
-    }
+  
     return Number(item.price);
 }
 
