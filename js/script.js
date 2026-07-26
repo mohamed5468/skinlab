@@ -242,13 +242,8 @@ function renderProductCard(item) {
                 <p class="text-gray-500 text-xs sm:text-base mb-3 sm:mb-4 min-h-[32px] sm:min-h-[48px] line-clamp-2">${item.description || ""}</p>
 
                 <div class="flex items-baseline gap-2 sm:gap-3 mb-4 sm:mb-6">
-                    ${hasPrice ? (activeOffer ? `
-                        <span class="text-lg sm:text-3xl font-bold text-[#d4af37]">${formatPrice(getProductPrice(item))}</span>
-                        <span class="text-xs sm:text-lg text-gray-400 line-through">${formatPrice(item.price)}</span>
-                    ` : `
-                        <span class="text-lg sm:text-3xl font-bold text-[#d4af37]">${formatPrice(item.price)}</span>
-                        ${item.oldPrice ? `<span class="text-xs sm:text-lg text-gray-400 line-through">${formatPrice(item.oldPrice)}</span>` : ""}
-                    `) : ""}
+                   <span class="text-lg sm:text-3xl font-bold text-[#d4af37]">${formatPrice(item.price)}</span>
+                        ${item.oldPrice ? `<span class="text-xs sm:text-lg text-gray-400 line-through">${formatPrice(item.oldPrice)}</span>
                 </div>
 
                 ${hasPrice ? (inCart ? `
