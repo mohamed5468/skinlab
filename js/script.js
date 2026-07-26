@@ -604,13 +604,7 @@ function renderCart() {
             const checked = (item.extras || []).some(e => e.name === extra.name);
             return `
                 <label class="flex items-center justify-between gap-3 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm cursor-pointer select-none">
-                    <span class="flex items-center gap-2">
-                        <input type="checkbox" ${checked ? "checked" : ""}
-                            onchange="window.toggleCartItemExtra('${encodedId}', '${escapeHtml(extra.name)}', ${extra.price}, this.checked)"
-                            class="h-4 w-4 accent-[#d4af37]">
-                        <span class="font-medium text-gray-800">${extra.name}</span>
-                    </span>
-                    <strong class="text-[#d4af37]">+${extra.price} ج.م</strong>
+                 
                 </label>
             `;
         }).join("");
@@ -735,7 +729,7 @@ function buildWhatsAppMessage(notes, phone, customerName) {
         `الإجمالي: ${total} ج.م`,
         "",
         `نوع الطلب: ${typeText}`,
-        checkoutType === "delivery" ? `العنوان: ${selectedArea} - ${notes || ""}` : "استلام شخصي"
+        checkoutType === "delivery" ? `العنوان: - ${notes || ""}` : "استلام شخصي"
     ];
 
     return message.join("\n");
@@ -749,10 +743,7 @@ window.requestPhoneBeforeOrder = function () {
         errEl.textContent = "أضف منتج واحد على الأقل للسلة.";
         return;
     }
-    if (checkoutType === "delivery" && !selectedArea) {
-        errEl.textContent = "اختر منطقة التوصيل.";
-        return;
-    }
+    
     errEl.textContent = "";
 
     const notes = checkoutType === "delivery"
