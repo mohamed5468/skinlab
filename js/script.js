@@ -238,7 +238,7 @@ function renderProductCard(item) {
 
             <div class="p-3 sm:p-6">
                 <h3 class="font-bold text-base sm:text-2xl mb-1 sm:mb-2 text-[#3c2f1f] leading-tight">${item.name}</h3>
-                <p class="text-gray-500 text-xs sm:text-base mb-3 sm:mb-4 min-h-[32px] sm:min-h-[48px] line-clamp-2">${item.description || ""}</p>
+                <p class="text-gray-500 text-xs sm:text-base mb-3 sm:mb-4 min-h-[32px] sm:min-h-[48px]">${item.description || ""}</p>
 
                 <div class="flex items-baseline gap-2 sm:gap-3 mb-4 sm:mb-6">
                     <span class="text-lg sm:text-3xl font-bold text-[#d4af37]">${formatPrice(item.price)}</span>
