@@ -20,6 +20,13 @@
           "description": "يحتوي على 1٪ هيالورونيك أسيد لترطيب مكثف و7٪ نياسيناميد للمساعدة على تقليل مظهر المسام، وتحسين ملمس البشرة، وتقليل ظهور الحبوب"
         },
         {
+          "name": "Face Moisturizer for Combination to Oily Skin",
+          "price": 140,
+          "oldPrice": 170,
+          "image": "images/011.jpeg",
+          "description": "جل كريم خفيف بزيت الورد البري والجوجوبا يمنح ترطيبًا متوازنًا دون ملمس دهني، ومناسب للبشرة المختلطة والدهنية والمعرضة للحبوب"
+        },
+        {
           "name": "skin moisturizer For normal and dry skin",
           "price": 170,
           "oldPrice": 200,
@@ -80,13 +87,7 @@
       "title": "Body care",
       "image": "images/666.jpeg",
       "items": [
-        {
-          "name": "Face Moisturizer for Combination to Oily Skin",
-          "price": 140,
-          "oldPrice": 170,
-          "image": "images/011.jpeg",
-          "description": "جل كريم خفيف بزيت الورد البري والجوجوبا يمنح ترطيبًا متوازنًا دون ملمس دهني، ومناسب للبشرة المختلطة والدهنية والمعرضة للحبوب"
-        },
+        
         {
           "name": "Nail oil",
           "price": 150,
