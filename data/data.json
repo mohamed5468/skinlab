@@ -2,7 +2,7 @@
   "offer": {
     "active": true,
     "title": "عرض الصيف المميز خصم",
-    "percentage": 50,
+    "percentage": 10,
     "startDate": "2026-07-24T00:00:00",
     "endDate": "2026-08-28T23:59:59",
     "durationHours": 48
@@ -61,7 +61,7 @@
       "image": "images/777.jpeg",
       "items": [
         {
-          "name": "Lash therapy",
+          "name": "Lash & Brows therapy",
           "price": 150,
           "oldPrice": 180,
           "image": "images/222.jpeg",
