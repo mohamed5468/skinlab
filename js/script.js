@@ -1000,13 +1000,31 @@ async function fetchOffers() {
         return;
     }
 
-    section.classList.remove("hidden");
-    grid.innerHTML = `
-        <div class="col-span-full text-center py-12 text-gray-500">
-            <i class="fas fa-spinner fa-spin text-4xl text-[#5E0B15] mb-3"></i>
-            <p class="text-lg font-medium text-gray-700">جاري تحميل العروض...</p>
-        </div>
-    `;
+    // Try loading cached offers first for instantaneous rendering
+    let hasCache = false;
+    try {
+        const cached = localStorage.getItem("skinLabCachedOffers");
+        if (cached) {
+            activeOffers = JSON.parse(cached);
+            if (activeOffers.length > 0) {
+                hasCache = true;
+                renderOffers();
+            }
+        }
+    } catch (e) {
+        console.error("Error reading cached offers:", e);
+    }
+
+    // If there's no cache, show loading spinner immediately
+    if (!hasCache) {
+        section.classList.remove("hidden");
+        grid.innerHTML = `
+            <div class="col-span-full text-center py-12 text-gray-500">
+                <i class="fas fa-spinner fa-spin text-4xl text-[#5E0B15] mb-3"></i>
+                <p class="text-lg font-medium text-gray-700">جاري تحميل العروض...</p>
+            </div>
+        `;
+    }
 
     try {
         const data = await new Promise((resolve, reject) => {
@@ -1031,19 +1049,29 @@ async function fetchOffers() {
         });
 
         if (Array.isArray(data)) {
-            activeOffers = data.filter(offer => offer.isActive === "نعم");
+            const newOffers = data.filter(offer => offer.isActive === "نعم");
+            const offersChanged = JSON.stringify(newOffers) !== JSON.stringify(activeOffers);
+            activeOffers = newOffers;
+            localStorage.setItem("skinLabCachedOffers", JSON.stringify(activeOffers));
+            if (offersChanged || !hasCache) {
+                renderOffers();
+            }
         } else {
             activeOffers = [];
+            localStorage.setItem("skinLabCachedOffers", JSON.stringify([]));
+            renderOffers();
         }
-        renderOffers();
     } catch (err) {
         console.error("Error loading offers:", err);
-        grid.innerHTML = `
-            <div class="col-span-full text-center py-12 text-red-500">
-                <i class="fas fa-exclamation-triangle text-3xl mb-3"></i>
-                <p>حدث خطأ أثناء تحميل العروض.</p>
-            </div>
-        `;
+        // Only show error message if we don't have any cached offers to fallback to
+        if (!hasCache) {
+            grid.innerHTML = `
+                <div class="col-span-full text-center py-12 text-red-500">
+                    <i class="fas fa-exclamation-triangle text-3xl mb-3"></i>
+                    <p>حدث خطأ أثناء تحميل العروض.</p>
+                </div>
+            `;
+        }
     }
 }
 
@@ -1076,7 +1104,12 @@ function renderOffers() {
                 <div class="mt-4 pt-4 border-t border-[#FDE2E4]">
                     <h5 class="text-xs font-bold text-[#5E0B15] mb-2 uppercase">المنتجات المشمولة:</h5>
                     <div class="flex flex-wrap gap-1.5">
-                        ${productsList.map(p => `<span class="bg-[#FAF0F2] text-gray-700 text-[10px] px-2 py-1 rounded-md font-medium border border-[#FDE2E4]">${escapeHtml(p)}</span>`).join("")}
+                        ${productsList.map(p => `
+                            <button onclick="window.showProductByName('${escapeHtml(p)}')" class="bg-[#FAF0F2] hover:bg-[#5E0B15] hover:text-white transition-all text-gray-700 text-[10px] px-2.5 py-1.5 rounded-xl font-bold border border-[#FDE2E4] shadow-sm transform hover:scale-105 active:scale-95 flex items-center gap-1">
+                                <i class="fas fa-eye text-[9px]"></i>
+                                ${escapeHtml(p)}
+                            </button>
+                        `).join("")}
                     </div>
                 </div>
             `;
@@ -1124,3 +1157,48 @@ function renderOffers() {
         `;
     }).join("");
 }
+
+window.showProductByName = function (name) {
+    if (!menuData) return;
+    let foundProduct = null;
+    
+    // Find the product by name in all menu categories (exact match)
+    for (const key of Object.keys(menuData)) {
+        const category = menuData[key];
+        if (category && Array.isArray(category.items)) {
+            const product = category.items.find(item => item.name.trim().toLowerCase() === name.trim().toLowerCase());
+            if (product) {
+                foundProduct = product;
+                break;
+            }
+        }
+    }
+
+    // Fallback: search for partial match if exact match not found
+    if (!foundProduct) {
+        for (const key of Object.keys(menuData)) {
+            const category = menuData[key];
+            if (category && Array.isArray(category.items)) {
+                const product = category.items.find(item => item.name.trim().toLowerCase().includes(name.trim().toLowerCase()));
+                if (product) {
+                    foundProduct = product;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (foundProduct) {
+        // Render detailed card for this product in the product modal
+        document.getElementById("modalTitle").innerHTML = `<span class="text-3xl font-bold text-[#5E0B15]">تفاصيل المنتج</span>`;
+        document.getElementById("productsContainer").innerHTML = `
+            <div class="col-span-full max-w-sm mx-auto w-full">
+                ${renderProductCard(foundProduct)}
+            </div>
+        `;
+        showModal();
+    } else {
+        console.warn("Product not found:", name);
+    }
+};
+
