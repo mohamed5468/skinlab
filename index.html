@@ -43,6 +43,7 @@
 
             <!-- Menu -->
             <div class="hidden md:flex items-center gap-8 text-lg font-medium text-gray-700">
+                <a id="navOffersLink" href="#offers-section" class="hover:text-[#5E0B15] text-[#E63946] font-bold transition-colors hidden flex items-center gap-1.5"><i class="fas fa-percentage"></i> العروض</a>
                 <a href="#products" class="hover:text-[#5E0B15] transition-colors">المنتجات</a>
                 <a href="#about" class="hover:text-[#5E0B15] transition-colors">عن The Skin Lab</a>
                 <a href="#contact" class="hover:text-[#5E0B15] transition-colors">تواصل معنا</a>
@@ -66,6 +67,7 @@
 
         <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden bg-white border-t px-6 py-4">
+            <a id="mobileOffersLink" href="#offers-section" onclick="toggleMobileMenu()" class="block py-3 text-lg text-[#E63946] font-bold hidden">العروض 🔥</a>
             <a href="#products" onclick="toggleMobileMenu()" class="block py-3 text-lg">المنتجات</a>
             <a href="#about" onclick="toggleMobileMenu()" class="block py-3 text-lg">عن The Skin Lab</a>
             <a href="#contact" onclick="toggleMobileMenu()" class="block py-3 text-lg">تواصل معنا</a>
@@ -178,6 +180,23 @@
         <div class="absolute bottom-10 left-1/2 flex flex-col items-center text-[#7A5C61]/60 text-sm">
             <div class="animate-bounce">↓</div>
             اسحبي للأسفل
+        </div>
+    </section>
+
+    <!-- Offers Section -->
+    <section id="offers-section" class="max-w-7xl mx-auto px-6 py-12 bg-white rounded-3xl shadow-sm border border-[#FDE2E4] mb-12 hidden">
+        <div class="text-center mb-10">
+            <span class="px-6 py-2 bg-[#FDE2E4] text-[#5E0B15] rounded-3xl text-sm font-bold">✦ عروض The Skin Lab ✦</span>
+            <h2 class="text-4xl font-bold mt-4 text-[#3A080E]">عروض حصرية لفترة محدودة</h2>
+            <p class="text-lg text-gray-500 mt-2">تسوقي باقات العناية المتكاملة بأفضل الأسعار</p>
+        </div>
+
+        <div id="offersGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Loading State -->
+            <div class="col-span-full text-center py-12 text-gray-500">
+                <i class="fas fa-spinner fa-spin text-4xl text-[#5E0B15] mb-3"></i>
+                <p class="text-lg font-medium text-gray-700">جاري تحميل العروض...</p>
+            </div>
         </div>
     </section>
 
@@ -331,6 +350,22 @@ We blend nature and science to create premium skincare products, carefully craft
             </div>
             <div class="px-8 py-6 border-t text-center text-sm text-gray-500">
                 أضيفي المنتجات المفضلة للسلة، واختاري التوصيل أو الاستلام قبل إرسال الطلب.
+            </div>
+        </div>
+    </div>
+
+    <!-- Offer Modal -->
+    <div id="offerModal" onclick="if(event.target === this) window.closeOfferModal()"
+        class="hidden fixed inset-0 bg-black/70 z-[110] flex items-center justify-center p-4">
+        <div onclick="event.stopImmediatePropagation()"
+            class="modal-pop bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col shadow-2xl relative">
+            
+            <button onclick="window.closeOfferModal()" class="absolute top-4 right-4 z-10 w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-gray-500 hover:text-[#5E0B15] shadow-sm transition-colors">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+
+            <div id="offerModalContent" class="flex-1 overflow-auto">
+                <!-- Content will be injected dynamically -->
             </div>
         </div>
     </div>

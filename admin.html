@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم إدارة العروض | The Skin Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: #FAF0F2; /* Skinlab bg */
+        }
+    </style>
+</head>
+<body class="bg-[#FAF0F2] min-h-screen">
+
+    <!-- Auth Overlay -->
+    <div id="authOverlay" class="fixed inset-0 bg-slate-900 z-[200] flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl border border-[#FDE2E4] text-center">
+            <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#FDE2E4] text-[#5E0B15] mb-6">
+                <i class="fas fa-lock text-3xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-slate-800 mb-2">منطقة الإدارة المغلقة</h2>
+            <p class="text-slate-500 mb-6 text-sm">يرجى إدخال رمز المرور السري للدخول إلى لوحة التحكم</p>
+            
+            <input type="password" id="adminPasswordInput" placeholder="رمز المرور"
+                class="w-full text-center rounded-2xl border border-slate-200 p-4 text-lg outline-none focus:border-[#5E0B15] mb-6 tracking-widest transition">
+            
+            <button onclick="checkAdminPassword()"
+                class="w-full rounded-2xl bg-[#5E0B15] hover:bg-[#3A080E] text-white font-bold py-4 text-lg shadow-lg hover:shadow-[#FCD7DC] transition">
+                تسجيل الدخول
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Dashboard UI -->
+    <div id="dashboardContent" class="hidden">
+        <!-- Header -->
+        <header class="bg-white border-b border-[#FDE2E4] sticky top-0 z-50 shadow-sm">
+            <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <img src="images/2222.png" alt="The Skin Lab Logo" class="h-12 w-auto">
+                    <span class="text-xl font-bold text-[#5E0B15]">لوحة التحكم • إدارة العروض</span>
+                </div>
+                
+                <div class="flex items-center gap-4">
+                    <a href="index.html" class="flex items-center gap-2 text-slate-600 hover:text-[#5E0B15] font-semibold text-sm">
+                        <i class="fas fa-external-link-alt"></i>
+                        <span>عرض الموقع الرئيسي</span>
+                    </a>
+                    <button onclick="adminLogout()" class="text-slate-400 hover:text-[#5E0B15] text-xl" title="تسجيل الخروج">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <main class="max-w-7xl mx-auto px-6 py-10">
+            <!-- Sheet URL Warning Banner -->
+            <div id="urlWarning" class="bg-amber-50 border border-amber-200 rounded-3xl p-6 mb-8 flex gap-4 items-start text-amber-800">
+                <i class="fas fa-exclamation-triangle text-2xl text-amber-600 mt-1"></i>
+                <div>
+                    <h4 class="font-bold text-lg mb-1">رابط Google Sheet غير مَعين بعد!</h4>
+                    <p class="text-sm text-amber-700 leading-relaxed">
+                        يرجى فتح ملف <span class="font-semibold">admin.html</span> وكود الموقع الرئيسي وتعيين قيمة المتغير <code class="bg-amber-100 px-2 py-0.5 rounded font-mono font-bold">OFFERS_SHEET_URL</code> برابط الـ Web App الخاص بجدول العروض ليعمل جلب وإرسال العروض بشكل صحيح.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Dashboard Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left Column: Add Offer Form -->
+                <div class="bg-white rounded-3xl border border-[#FDE2E4] p-6 shadow-sm h-fit">
+                    <h3 class="text-lg font-bold text-slate-800 mb-4 pb-3 border-b border-slate-50 flex items-center gap-2">
+                        <i class="fas fa-plus-circle text-[#5E0B15]"></i>
+                        إضافة عرض جديد
+                    </h3>
+
+                    <form id="addOfferForm" onsubmit="event.preventDefault(); submitNewOffer();" class="space-y-4">
+                        <div>
+                            <label class="mb-1.5 block text-sm font-semibold text-slate-700">اسم العرض <span class="text-red-500">*</span></label>
+                            <input type="text" id="offerTitleInput" required placeholder="مثال: عرض التفتيح الشامل"
+                                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-[#5E0B15] focus:bg-white transition">
+                        </div>
+
+                        <div>
+                            <label class="mb-1.5 block text-sm font-semibold text-slate-700">الوصف والتفاصيل <span class="text-red-500">*</span></label>
+                            <textarea id="offerDescInput" rows="3" required placeholder="مثال: احصلي على سيروم فيتامين سي وغسول وجه بخصم ٢٠٪"
+                                class="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-[#5E0B15] focus:bg-white transition"></textarea>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="mb-1.5 block text-sm font-semibold text-slate-700">السعر الأصلي</label>
+                                <input type="number" id="offerOriginalPriceInput" placeholder="500"
+                                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-[#5E0B15] focus:bg-white transition">
+                            </div>
+                            <div>
+                                <label class="mb-1.5 block text-sm font-semibold text-slate-700">سعر العرض</label>
+                                <input type="number" id="offerPriceInput" placeholder="400"
+                                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-[#5E0B15] focus:bg-white transition">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="mb-1.5 block text-sm font-semibold text-slate-700">رابط صورة العرض</label>
+                            <input type="url" id="offerImageInput" placeholder="رابط URL مباشر للصورة"
+                                class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-[#5E0B15] focus:bg-white transition">
+                            <p class="text-xs text-slate-400 mt-1">تلميح: يمكنك رفع الصورة على ImgBB ونسخ الرابط المباشر.</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="mb-1.5 block text-sm font-semibold text-slate-700">تاريخ بدء العرض</label>
+                                <input type="date" id="offerStartDateInput"
+                                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-[#5E0B15] focus:bg-white transition">
+                            </div>
+                            <div>
+                                <label class="mb-1.5 block text-sm font-semibold text-slate-700">تاريخ انتهاء العرض</label>
+                                <input type="date" id="offerEndDateInput"
+                                    class="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm outline-none focus:border-[#5E0B15] focus:bg-white transition">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="mb-1.5 block text-sm font-semibold text-slate-700">المنتجات المشمولة في العرض</label>
+                            <div id="productChecklist" class="max-h-60 overflow-y-auto border rounded-xl bg-slate-50 p-4 space-y-2 text-sm">
+                                <p class="text-slate-400 text-center py-4">جاري تحميل المنتجات...</p>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-1">سيتم تدوين هذه المنتجات تلقائياً في السلة والواتساب لتسهيل التحضير.</p>
+                        </div>
+
+                        <button type="submit" id="submitOfferBtn"
+                            class="w-full rounded-xl bg-[#5E0B15] hover:bg-[#3A080E] text-white font-bold py-3.5 shadow-md hover:shadow-red-100 transition flex items-center justify-center gap-2">
+                            <span>حفظ ونشر العرض</span>
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Right Column: Current Offers List -->
+                <div class="lg:col-span-2 bg-white rounded-3xl border border-[#FDE2E4] p-6 shadow-sm">
+                    <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center justify-between pb-3 border-b border-slate-50">
+                        <span class="flex items-center gap-2">
+                            <i class="fas fa-percentage text-[#5E0B15]"></i>
+                            العروض المنشورة حالياً
+                        </span>
+                        <span id="offersCountBadge" class="bg-[#FDE2E4] text-[#5E0B15] text-xs px-2.5 py-1 rounded-full font-bold">0 عرض</span>
+                    </h3>
+
+                    <!-- Offers Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-right border-collapse">
+                            <thead>
+                                <tr class="text-slate-400 text-sm border-b">
+                                    <th class="pb-3 font-semibold">الصورة</th>
+                                    <th class="pb-3 font-semibold">العنوان والوصف</th>
+                                    <th class="pb-3 font-semibold">الأسعار</th>
+                                    <th class="pb-3 font-semibold">الجدولة والنشاط</th>
+                                    <th class="pb-3 font-semibold">المنتجات</th>
+                                    <th class="pb-3 font-semibold text-left">إجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="offersTableBody" class="divide-y text-slate-700 text-sm">
+                                <tr>
+                                    <td colspan="6" class="py-12 text-center text-slate-400">
+                                        <i class="fas fa-spinner fa-spin text-3xl text-[#5E0B15] mb-2"></i>
+                                        <p>جاري تحميل العروض...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // ------------------- Configurations -------------------
+        // يرجى استبدال هذا الرابط بالرابط الحقيقي المستخرج من الـ Apps Script المخصص للعروض
+        const OFFERS_SHEET_URL = "https://script.google.com/macros/s/AKfycbwz2e2d6HnOf78jjAhAAtABL3Y2vjxzFCVjZneSpufqRs5E8UkYv83sezq-DfiI3_pF/exec";
+        const ADMIN_PASSWORD = "skinlab2026"; // كلمة المرور الافتراضية لـ Skinlab
+        
+        let allProducts = [];
+        let allOffers = [];
+
+        // ------------------- Authentication -------------------
+        window.addEventListener("load", () => {
+            if (sessionStorage.getItem("adminAuthorized") === "true") {
+                authorizeAdmin();
+            }
+            // إظهار تحذير في حال لم يتم تعيين الرابط
+            if (OFFERS_SHEET_URL === "رابط_ويب_أب_العروض_هنا") {
+                document.getElementById("urlWarning").classList.remove("hidden");
+            } else {
+                document.getElementById("urlWarning").classList.add("hidden");
+            }
+        });
+
+        function checkAdminPassword() {
+            const input = document.getElementById("adminPasswordInput").value;
+            if (input === ADMIN_PASSWORD) {
+                sessionStorage.setItem("adminAuthorized", "true");
+                authorizeAdmin();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'مرحباً بك!',
+                    text: 'تم تسجيل الدخول بنجاح.',
+                    confirmButtonText: 'حسناً',
+                    timer: 1500
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'رمز مرور خاطئ',
+                    text: 'يرجى إدخال رمز المرور السري الصحيح.',
+                    confirmButtonText: 'حسناً'
+                });
+            }
+        }
+
+        function authorizeAdmin() {
+            document.getElementById("authOverlay").classList.add("hidden");
+            document.getElementById("dashboardContent").classList.remove("hidden");
+            loadMenuProducts();
+            loadOffersList();
+        }
+
+        function adminLogout() {
+            sessionStorage.removeItem("adminAuthorized");
+            window.location.reload();
+        }
+
+        // ------------------- Load Products -------------------
+        async function loadMenuProducts() {
+            try {
+                const response = await fetch("data/data.json");
+                const data = await response.json();
+                
+                const products = [];
+                Object.keys(data.menu).forEach(catKey => {
+                    const cat = data.menu[catKey];
+                    if (!cat) return;
+                    
+                    if (Array.isArray(cat.items)) {
+                        cat.items.forEach(item => {
+                            products.push({ ...item, categoryTitle: cat.title });
+                        });
+                    }
+                });
+                
+                allProducts = products;
+                renderProductChecklist();
+            } catch (err) {
+                console.error("Error loading products:", err);
+                document.getElementById("productChecklist").innerHTML = `<p class="text-red-500 text-center">فشل تحميل المنتجات.</p>`;
+            }
+        }
+
+        function renderProductChecklist() {
+            const container = document.getElementById("productChecklist");
+            if (!container) return;
+            
+            if (allProducts.length === 0) {
+                container.innerHTML = `<p class="text-slate-400 text-center">لا توجد منتجات متاحة.</p>`;
+                return;
+            }
+
+            // Group by category
+            const grouped = {};
+            allProducts.forEach(p => {
+                if (!grouped[p.categoryTitle]) grouped[p.categoryTitle] = [];
+                grouped[p.categoryTitle].push(p);
+            });
+
+            container.innerHTML = Object.keys(grouped).map(catName => `
+                <div class="mb-3">
+                    <h5 class="font-bold text-[#5E0B15] mb-1 border-b pb-1 text-xs uppercase">${catName}</h5>
+                    <div class="space-y-1.5 pl-2 mt-1">
+                        ${grouped[catName].map(p => `
+                            <label class="flex items-center gap-2 cursor-pointer select-none">
+                                <input type="checkbox" name="offerProducts" value="${escapeHtml(p.name)}" class="h-4 w-4 accent-[#5E0B15] rounded">
+                                <span class="text-slate-700">${escapeHtml(p.name)}</span>
+                            </label>
+                        `).join("")}
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        // ------------------- Load Offers List -------------------
+        async function loadOffersList() {
+            const tableBody = document.getElementById("offersTableBody");
+            if (!tableBody) return;
+
+            if (OFFERS_SHEET_URL === "رابط_ويب_أب_العروض_هنا") {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="py-8 text-center text-amber-600 font-semibold">
+                            يرجى تعيين رابط OFFERS_SHEET_URL أولاً للتمكن من جلب العروض.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            try {
+                // Fetch offers via JSONP to prevent CORS issues
+                const data = await new Promise((resolve, reject) => {
+                    const callbackName = "offersCallback_" + Math.round(100000 * Math.random());
+                    window[callbackName] = function(res) {
+                        delete window[callbackName];
+                        document.getElementById(callbackName)?.remove();
+                        resolve(res);
+                    };
+
+                    const script = document.createElement("script");
+                    script.id = callbackName;
+                    script.src = `${OFFERS_SHEET_URL}?callback=${callbackName}`;
+                    script.onerror = (err) => {
+                        delete window[callbackName];
+                        document.getElementById(callbackName)?.remove();
+                        reject(err);
+                    };
+                    document.body.appendChild(script);
+                });
+
+                if (Array.isArray(data)) {
+                    allOffers = data;
+                } else {
+                    allOffers = [];
+                }
+                renderOffersTable();
+            } catch (err) {
+                console.error("Error loading offers:", err);
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="py-8 text-center text-red-500 font-semibold">
+                            فشل جلب العروض من Google Sheets. تأكد من إعداد النشر وصلاحية الوصول للويب أب.
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        function renderOffersTable() {
+            const tableBody = document.getElementById("offersTableBody");
+            const badge = document.getElementById("offersCountBadge");
+            if (!tableBody) return;
+
+            badge.textContent = `${allOffers.length} عرض`;
+
+            if (allOffers.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="py-12 text-center text-slate-400">
+                            لا توجد عروض منشورة حالياً.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tableBody.innerHTML = allOffers.map(offer => {
+                const img = offer.image || "images/2222.png";
+                const productsText = offer.products ? offer.products.split(",").join("، ") : "غير محدد";
+                
+                // Parse dates and determine status badge
+                const local = new Date();
+                const offset = local.getTimezoneOffset();
+                const localDate = new Date(local.getTime() - (offset * 60 * 1000));
+                const todayStr = localDate.toISOString().split("T")[0];
+
+                let statusBadge = '';
+                const startVal = offer.startDate ? offer.startDate.split("T")[0] : "";
+                const endVal = offer.endDate ? offer.endDate.split("T")[0] : "";
+
+                if (offer.isActive !== "نعم") {
+                    statusBadge = `<span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-1 text-xs font-bold text-slate-600">غير نشط</span>`;
+                } else {
+                    if (startVal && todayStr < startVal) {
+                        statusBadge = `<span class="inline-flex items-center rounded-full bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-700 border border-amber-100">مجدول</span>`;
+                    } else if (endVal && todayStr > endVal) {
+                        statusBadge = `<span class="inline-flex items-center rounded-full bg-red-50 px-2.5 py-1 text-xs font-bold text-red-700 border border-red-100">منتهي</span>`;
+                    } else {
+                        statusBadge = `<span class="inline-flex items-center rounded-full bg-green-50 px-2.5 py-1 text-xs font-bold text-green-700 border border-green-100">نشط حالياً</span>`;
+                    }
+                }
+
+                let dateInfo = '';
+                if (startVal || endVal) {
+                    dateInfo = `
+                        <div class="text-[10px] text-slate-400 mt-1 font-mono">
+                            ${startVal ? `<div>البدء: ${startVal}</div>` : ""}
+                            ${endVal ? `<div>الانتهاء: ${endVal}</div>` : ""}
+                        </div>
+                    `;
+                } else {
+                    dateInfo = `<div class="text-[10px] text-slate-400 mt-1 font-sans">دائم (غير محدد)</div>`;
+                }
+
+                return `
+                    <tr class="hover:bg-slate-50 transition">
+                        <td class="py-4">
+                            <img src="${img}" alt="${escapeHtml(offer.title)}" class="w-16 h-12 object-cover rounded-xl border border-slate-100 shadow-sm">
+                        </td>
+                        <td class="py-4 pl-4">
+                            <h4 class="font-bold text-slate-800 text-base">${escapeHtml(offer.title)}</h4>
+                            <p class="text-xs text-slate-400 mt-0.5 max-w-xs leading-relaxed">${escapeHtml(offer.description)}</p>
+                        </td>
+                        <td class="py-4">
+                            <div class="text-slate-800 font-bold">${offer.offerPrice ? offer.offerPrice + ' ج.م' : 'عرض خاص'}</div>
+                            ${offer.originalPrice ? `<div class="text-xs text-slate-400 line-through">${offer.originalPrice} ج.م</div>` : ''}
+                        </td>
+                        <td class="py-4">
+                            <div>${statusBadge}</div>
+                            ${dateInfo}
+                        </td>
+                        <td class="py-4">
+                            <span class="text-xs font-medium text-slate-500 max-w-xs block leading-relaxed">${escapeHtml(productsText)}</span>
+                        </td>
+                        <td class="py-4 text-left">
+                            <button onclick="deleteOffer(${offer.id})" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-2.5 rounded-xl transition" title="حذف العرض">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join("");
+        }
+
+        // ------------------- Submit & Action Functions -------------------
+        async function submitNewOffer() {
+            const title = document.getElementById("offerTitleInput").value.trim();
+            const description = document.getElementById("offerDescInput").value.trim();
+            const originalPrice = document.getElementById("offerOriginalPriceInput").value.trim();
+            const offerPrice = document.getElementById("offerPriceInput").value.trim();
+            const image = document.getElementById("offerImageInput").value.trim();
+            const startDate = document.getElementById("offerStartDateInput").value;
+            const endDate = document.getElementById("offerEndDateInput").value;
+            const submitBtn = document.getElementById("submitOfferBtn");
+
+            const checkedProducts = [];
+            document.querySelectorAll("input[name='offerProducts']:checked").forEach(checkbox => {
+                checkedProducts.push(checkbox.value);
+            });
+
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin text-white"></i> جاري الحفظ والنشر...`;
+
+            const payload = {
+                action: "add",
+                title: title,
+                description: description,
+                originalPrice: originalPrice,
+                offerPrice: offerPrice,
+                image: image,
+                startDate: startDate,
+                endDate: endDate,
+                products: checkedProducts.join(",")
+            };
+
+            try {
+                await fetch(OFFERS_SHEET_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'تم النشر!',
+                    text: 'تمت إضافة العرض ونشره على الموقع بنجاح.',
+                    confirmButtonText: 'حسناً'
+                });
+
+                // Clear fields
+                document.getElementById("addOfferForm").reset();
+                document.querySelectorAll("input[name='offerProducts']").forEach(cb => cb.checked = false);
+
+                // Reload offers list
+                loadOffersList();
+            } catch (err) {
+                console.error("Error creating offer:", err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'فشل النشر',
+                    text: 'حدث خطأ أثناء إرسال الطلب لـ Google Sheets.',
+                    confirmButtonText: 'حسناً'
+                });
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<span>حفظ ونشر العرض</span>`;
+            }
+        }
+
+        async function deleteOffer(id) {
+            const result = await Swal.fire({
+                title: 'هل أنت متأكد؟',
+                text: "سيتم حذف هذا العرض نهائياً من الموقع وجدول البيانات.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ce2b38',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: 'نعم، احذفه!',
+                cancelButtonText: 'إلغاء'
+            });
+
+            if (!result.isConfirmed) return;
+
+            try {
+                await fetch(OFFERS_SHEET_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ action: "delete", id: id })
+                });
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'تم الحذف!',
+                    text: 'تم حذف العرض بنجاح.',
+                    confirmButtonText: 'حسناً',
+                    timer: 1500
+                });
+
+                loadOffersList();
+            } catch (err) {
+                console.error("Error deleting offer:", err);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'فشل الحذف',
+                    text: 'حدث خطأ أثناء الاتصال بالخادم لحذف العرض.',
+                    confirmButtonText: 'حسناً'
+                });
+            }
+        }
+
+        // ------------------- Utility Functions -------------------
+        function escapeHtml(str) {
+            return String(str || "").replace(/[&<>]/g, function (m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+    </script>
+</body>
+</html>

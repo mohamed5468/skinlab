@@ -172,6 +172,7 @@ async function loadData() {
         }));
         renderCategories();
         renderQuickLinks();
+        await fetchOffers();
     } catch (error) {
         console.error("خطأ في تحميل ملف JSON:", error);
     }
@@ -395,7 +396,7 @@ window.addToCartFromEncoded = function (encoded) {
 
 function addToCart(product) {
     if (!product.price) return;
-    const activePrice = activeOffer ? Math.round(Number(product.price) * (1 - activeOffer.percentage / 100)) : Number(product.price);
+    const activePrice = (activeOffer && !product.isOffer) ? Math.round(Number(product.price) * (1 - activeOffer.percentage / 100)) : Number(product.price);
     const productId = `${product.name}-${activePrice}-${product.image}`;
     const existing = cart.find(item => item.id === productId);
 
@@ -984,3 +985,142 @@ window.showCart = window.openCart;
 window.onload = () => {
     loadData();
 };
+
+// ------------------- Offers Section Integration -------------------
+const OFFERS_SHEET_URL = "https://script.google.com/macros/s/AKfycbwz2e2d6HnOf78jjAhAAtABL3Y2vjxzFCVjZneSpufqRs5E8UkYv83sezq-DfiI3_pF/exec";
+let activeOffers = [];
+
+async function fetchOffers() {
+    const section = document.getElementById("offers-section");
+    const grid = document.getElementById("offersGrid");
+    if (!section || !grid) return;
+
+    if (OFFERS_SHEET_URL === "رابط_ويب_أب_العروض_هنا" || OFFERS_SHEET_URL === "") {
+        section.classList.add("hidden");
+        return;
+    }
+
+    section.classList.remove("hidden");
+    grid.innerHTML = `
+        <div class="col-span-full text-center py-12 text-gray-500">
+            <i class="fas fa-spinner fa-spin text-4xl text-[#5E0B15] mb-3"></i>
+            <p class="text-lg font-medium text-gray-700">جاري تحميل العروض...</p>
+        </div>
+    `;
+
+    try {
+        const data = await new Promise((resolve, reject) => {
+            const callbackName = "offersCallback_" + Math.round(100000 * Math.random());
+            window[callbackName] = function (res) {
+                delete window[callbackName];
+                const scriptEl = document.getElementById(callbackName);
+                if (scriptEl) scriptEl.remove();
+                resolve(res);
+            };
+
+            const script = document.createElement("script");
+            script.id = callbackName;
+            script.src = `${OFFERS_SHEET_URL}?callback=${callbackName}`;
+            script.onerror = (err) => {
+                delete window[callbackName];
+                const scriptEl = document.getElementById(callbackName);
+                if (scriptEl) scriptEl.remove();
+                reject(err);
+            };
+            document.body.appendChild(script);
+        });
+
+        if (Array.isArray(data)) {
+            activeOffers = data.filter(offer => offer.isActive === "نعم");
+        } else {
+            activeOffers = [];
+        }
+        renderOffers();
+    } catch (err) {
+        console.error("Error loading offers:", err);
+        grid.innerHTML = `
+            <div class="col-span-full text-center py-12 text-red-500">
+                <i class="fas fa-exclamation-triangle text-3xl mb-3"></i>
+                <p>حدث خطأ أثناء تحميل العروض.</p>
+            </div>
+        `;
+    }
+}
+
+function renderOffers() {
+    const section = document.getElementById("offers-section");
+    const grid = document.getElementById("offersGrid");
+    const navLink = document.getElementById("navOffersLink");
+    const mobileLink = document.getElementById("mobileOffersLink");
+    
+    if (!grid) return;
+
+    if (activeOffers.length === 0) {
+        section.classList.add("hidden");
+        if (navLink) navLink.classList.add("hidden");
+        if (mobileLink) mobileLink.classList.add("hidden");
+        return;
+    }
+
+    section.classList.remove("hidden");
+    if (navLink) navLink.classList.remove("hidden");
+    if (mobileLink) mobileLink.classList.remove("hidden");
+
+    grid.innerHTML = activeOffers.map(offer => {
+        const img = offer.image || "images/2222.png";
+        
+        let productsHtml = "";
+        if (offer.products) {
+            const productsList = offer.products.split(",").map(p => p.trim());
+            productsHtml = `
+                <div class="mt-4 pt-4 border-t border-[#FDE2E4]">
+                    <h5 class="text-xs font-bold text-[#5E0B15] mb-2 uppercase">المنتجات المشمولة:</h5>
+                    <div class="flex flex-wrap gap-1.5">
+                        ${productsList.map(p => `<span class="bg-[#FAF0F2] text-gray-700 text-[10px] px-2 py-1 rounded-md font-medium border border-[#FDE2E4]">${escapeHtml(p)}</span>`).join("")}
+                    </div>
+                </div>
+            `;
+        }
+
+        const btnObj = {
+            name: offer.title,
+            price: offer.offerPrice,
+            originalPrice: offer.originalPrice,
+            image: img,
+            isOffer: true,
+            products: offer.products
+        };
+
+        const encodedOffer = encodeURIComponent(JSON.stringify(btnObj));
+
+        return `
+            <div class="bg-white rounded-3xl border border-[#FDE2E4] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group flex flex-col h-full transform hover:-translate-y-1">
+                <div class="relative h-48 overflow-hidden bg-[#FAF0F2]">
+                    <img src="${img}" alt="${escapeHtml(offer.title)}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    <div class="absolute top-3 right-3 bg-[#E63946] text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-md flex items-center gap-1.5">
+                        <i class="fas fa-fire"></i>
+                        عرض خاص
+                    </div>
+                </div>
+                <div class="p-6 flex flex-col flex-1">
+                    <h3 class="text-xl font-bold text-[#3A080E] mb-2">${escapeHtml(offer.title)}</h3>
+                    <p class="text-sm text-gray-500 mb-4 flex-1 leading-relaxed">${escapeHtml(offer.description)}</p>
+                    
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <span class="text-2xl font-black text-[#5E0B15]">${offer.offerPrice} ج.م</span>
+                            ${offer.originalPrice ? `<span class="text-sm text-gray-400 line-through mr-2">${offer.originalPrice} ج.م</span>` : ""}
+                        </div>
+                    </div>
+                    
+                    ${productsHtml}
+
+                    <button onclick="window.addToCartFromEncoded('${encodedOffer}')" class="w-full mt-4 bg-[#FDE2E4] hover:bg-[#5E0B15] text-[#5E0B15] hover:text-white font-bold py-3.5 rounded-2xl transition-colors duration-300 flex items-center justify-center gap-2 shadow-sm">
+                        <i class="fas fa-cart-plus"></i>
+                        <span>أضف العرض للسلة</span>
+                    </button>
+                </div>
+            </div>
+        `;
+    }).join("");
+}
